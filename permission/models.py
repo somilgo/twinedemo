@@ -8,7 +8,7 @@ class Job(models.Model):
 
 	def can_view_job(self, user):
 		return user.user_type=='A' or self.systemuser_set.filter(pk=user.pk).exists()
-		
+
 	def __unicode__(self):
 		return self.title
 
@@ -16,6 +16,7 @@ class Job(models.Model):
 #Admin and Recruiter objects are differentiated by the user_type field (for extensibility)
 #Email doubles as username and is used for authentication
 class SystemUser(AbstractBaseUser):
+	#General fields
 	first_name = models.CharField(verbose_name="First Name", max_length=30, default="")
 	last_name = models.CharField(verbose_name="Last Name", max_length=30, default="")
 	email = models.EmailField(
@@ -24,14 +25,19 @@ class SystemUser(AbstractBaseUser):
 		unique=True,
 		default=''
 	)
-	USERNAME_FIELD = 'email'
+	#Field specific to Recruiter
 	jobs = models.ManyToManyField(Job, blank=True)
+
+	#User type differentiates between admin and recruiter
 	type_choices = (
 		('A', 'Admin'),
 		('R', 'Recruiter'),
 	)
 	user_type = models.CharField(max_length=1, choices=type_choices, default='R')
+
 	objects=UserManager()
+	REQUIRED_FIELDS = ['user_type', 'first_name', 'last_name']
+	USERNAME_FIELD = 'email'
 
 	def __unicode__(self):
 		return self.first_name + " " + self.last_name

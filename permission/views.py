@@ -17,13 +17,17 @@ def log_in(request):
 	if form.is_valid():
 		email = form.cleaned_data['email']
 		password = form.cleaned_data['password']
-		user = authenticate(email=email, password=password)
+		user = SystemUser.objects.get(email=email)
 		if user is not None:
 			request.session['user'] = email
 			return index(request)
 		else:
-			messages.warning(request, "Username or password is incorrect.")
+			pass
 	return render(request, 'permission/log_in.html', {'form':form})
+
+def logout(request):
+	request.session.pop('user', None)
+	return HttpResponseRedirect("/permission/main")
 
 '''
 Main dashboard -- shows jobs (that the current user has access to) and
