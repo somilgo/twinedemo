@@ -1,0 +1,18 @@
+<h1>
+Recruiter Name: {{rec}}
+</h1>
+
+<form action="/permission/recruiter/{{rec.pk}}/" method="post">
+    {% csrf_token %}
+    {{ form.as_p}}
+    <input type="submit" value="Update" />
+</form>
+<style>
+select
+{
+	width: 300px;
+	height: 300px;
+}
+</style>
+<br>
+<a href="/permission/main/">Back to Main</a>

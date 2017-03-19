@@ -1,0 +1,15 @@
+<h1>
+Job: {{job.title}}
+</h1>
+<p>
+<b>Description: </b>
+{{job.description}}
+</p>
+{%if admin%}
+<h2>
+Recruiters with Access
+</h2>
+{% for r in users%}
+<a>{{r}}</a><br>
+{% endfor %}
+{%endif%}

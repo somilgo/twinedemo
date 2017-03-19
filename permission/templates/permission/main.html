@@ -1,0 +1,23 @@
+<h1>
+{% if admin %}
+Admin: {{user}}
+{% else %}
+Recruiter: {{user}}
+{% endif %}
+</h1>
+
+<h2>
+Jobs
+</h2>
+{% for j in jobs %}
+<a href = "/permission/job/{{j.pk}}">{{j}}</a><br>
+{% endfor %}
+
+{% if admin %}
+<h2>
+Recruiters
+</h2>
+{% for r in recruiters%}
+<a href = "/permission/recruiter/{{r.pk}}">{{r}}</a><br>
+{% endfor %}
+{% endif %}
