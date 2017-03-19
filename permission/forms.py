@@ -2,6 +2,7 @@ from django import forms
 from permission.models import *
 from django.contrib.auth.hashers import check_password
 
+#Form for authenticating users and logging them in
 class LogIn(forms.Form):
 	email = forms.EmailField(label = "Email")
 	password = forms.CharField(widget=forms.PasswordInput, label="Password")
@@ -18,6 +19,7 @@ class LogIn(forms.Form):
 				raise forms.ValidationError("Email and password combination do not match.")
 		return self.cleaned_data
 
+#Form for admins to update which jobs a recruiter has access to
 class RecruiterForm(forms.ModelForm):
 	jobs = forms.ModelMultipleChoiceField(queryset=Job.objects.all(),widget=forms.SelectMultiple,required=False)
 	class Meta:

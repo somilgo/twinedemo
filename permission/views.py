@@ -4,12 +4,14 @@ from .forms import LogIn, RecruiterForm
 from django.contrib.auth import authenticate
 from .models import *
 
+#Home page redirects to log in page if not logged in
 def index(request):
 	if 'user' not in request.session:
 		return log_in(request)
 	else:
 		return HttpResponseRedirect("/permission/main")
 
+#Log in page for both recruiters and admins
 def log_in(request):
 	form = LogIn(request.POST or None)
 	if form.is_valid():
@@ -23,6 +25,10 @@ def log_in(request):
 			messages.warning(request, "Username or password is incorrect.")
 	return render(request, 'permission/log_in.html', {'form':form})
 
+'''
+Main dashboard -- shows jobs (that the current user has access to) and
+a list of the recruiters (if admin)
+'''
 def main(request):
 	if 'user' not in request.session:
 		return HttpResponseRedirect("/permission/index")
@@ -37,6 +43,7 @@ def main(request):
 	context['user'] = user
 	return render(request, 'permission/main.html', context)
 
+#Page that shows the title and description for a job. If admin, shows recruiters.
 def job(request, pk):
 	if 'user' not in request.session:
 		return HttpResponseRedirect("/permission/index")
@@ -50,6 +57,7 @@ def job(request, pk):
 	context['admin'] = user.user_type=="A"
 	return render(request, 'permission/job.html', context)
 
+#Page for admins that shows the jobs that a recruiter has access to and allows admin to edit
 def recruiter(request, pk):
 	if 'user' not in request.session:
 		return HttpResponseRedirect("/permission/index")
