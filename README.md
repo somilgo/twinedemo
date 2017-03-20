@@ -6,8 +6,8 @@ Setup Instructions
 - Migrate database using "python manage.py migrate"
 - Run local server "python manage.py runserver"
 - Navigate to homepage at "localhost:8000/permission/index"
-- To create SystemUsers and Jobs, first create an admin account using "python manage.py createsuperuser", then login at "localhost:8000/admin" and use UI
-- NOTE: Passwords must be set in Python shell ("python manage.py shell") with set_password() method called on SystemUser object
+- Use "Create User" button on login page to create users (right now there is no security to prevent anyone from creating an admin account but this is an easy fix given further specifications on admin verification)
+- Create jobs from main page and similarly assign recruiters jobs (pretty self-explanatory)
 
 Time Breakdown
 -------------------------------
