@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .forms import LogIn, RecruiterForm
+from .forms import *
 from django.contrib.auth import authenticate
 from .models import *
 
@@ -43,7 +43,7 @@ def main(request):
 		context['jobs'] = Job.objects.all()
 		context['recruiters'] = SystemUser.objects.filter(user_type="R")
 	else:
-		context['jobs'] = user.jobs.all()
+		context['jobs'] = user.get_profile().jobs.all()
 	context['user'] = user
 	return render(request, 'permission/main.html', context)
 
@@ -56,7 +56,8 @@ def job(request, pk):
 	job = Job.objects.get(pk=pk)
 	if not job.can_view_job(user):
 		return HttpResponse("You do not have permission to view this job.")
-	context['users'] = job.systemuser_set.all()
+	context['users'] = job.get_recruiter_set()
+	print context['users']
 	context['job'] = job
 	context['admin'] = user.user_type=="A"
 	return render(request, 'permission/job.html', context)
@@ -73,10 +74,42 @@ def recruiter(request, pk):
 	context['rec'] = rec
 
 	if request.method == 'POST':
-		form = RecruiterForm(request.POST, instance=rec)
+		form = RecruiterForm(request.POST, instance=rec.get_profile())
 		if form.is_valid():
 			form.save()
 	else:
-		form = RecruiterForm(instance=rec)
+		form = RecruiterForm(instance=rec.get_profile())
 	context['form'] = form
 	return render(request, 'permission/recruiter.html', context)
+
+#Sign up form -- generic
+def sign_up(request):
+	request.session.pop('user', None)
+	if request.method == 'POST':
+		form = RegistrationForm(request.POST)
+		if form.is_valid():
+			u = form.save()
+			#Creates and associates user profile
+			if u.user_type=='A':
+				n = Admin(user=u)
+			else:
+				n = Recruiter(user=u)
+			n.save()
+			u.save()
+			return HttpResponseRedirect('/permission/index')
+	else:
+		form = RegistrationForm()
+
+	return render(request, 'permission/sign_up.html', {'form': form})
+
+#Job creation form -- generic
+def create_job(request):
+	if request.method == 'POST':
+		form = JobForm(request.POST)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect('/permission/main')
+	else:
+		form = JobForm()
+
+	return render(request, 'permission/create_job.html', {'form': form})
